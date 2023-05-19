@@ -50,24 +50,6 @@ String incoming_port_strings[6];
 
 const uint FAN_PWM_PIN = D16;
 
-template <typename AnySerial> 
-void handle_serial_device(AnySerial port, uint num) {
-  while (port.available() > 0) {
-    char incoming_char = (char)port.read();
-    if (incoming_char == '\n') {
-      incoming_port_strings[num-1].trim();
-      Serial.println(String(num) + " " + incoming_port_strings[num]);
-      incoming_port_strings[num-1] = "";
-    } else {
-      incoming_port_strings[num-1] += incoming_char;
-    }
-    if (incoming_port_strings[num-1].length() >= BUFFER_SIZE) {
-      incoming_port_strings[num-1] = "";
-      port.println();
-    }
-  }
-}
-
 void setup() {
   Serial.begin(115200);
   Serial.println();
@@ -167,14 +149,6 @@ void handle_usb() {
 void loop() {
   // Read and handle commands from USB
   handle_usb();
-
-  // // Parse and return data from ports
-  // handle_serial_device(Serial1, 1);
-  // handle_serial_device(Serial2, 2);
-  // handle_serial_device(serial_pios[0], 3);
-  // handle_serial_device(serial_pios[1], 4);
-  // handle_serial_device(serial_pios[2], 5);
-  // handle_serial_device(serial_pios[3], 6);
 
   // Handle incoming data on Serial1
   while (Serial1.available() > 0) {
